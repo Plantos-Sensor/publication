@@ -193,7 +193,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Console message for developers
-console.log('🚀 Annual Magazine Website - Ready for Launch!');
+console.log('🚀 Plantos Magazine Website - Ready for Launch!');
 console.log('📧 Email subscriptions stored in localStorage');
 console.log('📝 Submissions stored in localStorage');
 console.log('⏰ Countdown to January 1st, 2026 active!');
