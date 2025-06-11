@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coming Soon - Annual Magazine 2026</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <h1>Annual Magazine</h1>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section id="hero" class="hero-section">
+            <div class="hero-content">
+                <h1>A New Voice in Publishing</h1>
+                <p class="hero-subtitle">Launching January 1st, 2026</p>
+                <div id="countdown" class="countdown">
+                    <div class="time-unit">
+                        <span id="days">000</span>
+                        <label>Days</label>
+                    </div>
+                    <div class="time-unit">
+                        <span id="hours">00</span>
+                        <label>Hours</label>
+                    </div>
+                    <div class="time-unit">
+                        <span id="minutes">00</span>
+                        <label>Minutes</label>
+                    </div>
+                    <div class="time-unit">
+                        <span id="seconds">00</span>
+                        <label>Seconds</label>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="about" class="about-section">
+            <div class="container">
+                <h2>Our Mission</h2>
+                <p>We are creating a platform for diverse voices and compelling stories that matter. Our annual magazine will showcase the best in journalism, photography, and creative content from contributors around the world.</p>
+                <p>Join us in building a publication that celebrates excellence in storytelling and visual narratives.</p>
+            </div>
+        </section>
+
+        <section id="newsletter" class="newsletter-section">
+            <div class="container">
+                <h2>Stay Updated</h2>
+                <p>Be the first to know when we launch. Join our mailing list for exclusive updates.</p>
+                <form id="email-form" class="email-form">
+                    <div class="form-group">
+                        <input type="email" id="email" placeholder="Enter your email address" required>
+                        <button type="submit">Subscribe</button>
+                    </div>
+                    <div id="email-message" class="form-message"></div>
+                </form>
+            </div>
+        </section>
+
+        <section id="submissions" class="submissions-section">
+            <div class="container">
+                <h2>Submit Your Work</h2>
+                <p>We're looking for outstanding articles, photographs, and videos. Share your work with us for consideration in our inaugural issue.</p>
+                
+                <form id="submission-form" class="submission-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="name">Full Name *</label>
+                            <input type="text" id="name" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="submission-email">Email *</label>
+                            <input type="email" id="submission-email" name="email" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="submission-type">Submission Type *</label>
+                        <select id="submission-type" name="type" required>
+                            <option value="">Select submission type</option>
+                            <option value="article">Article</option>
+                            <option value="photography">Photography</option>
+                            <option value="video">Video</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="title">Title *</label>
+                        <input type="text" id="title" name="title" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="description">Description *</label>
+                        <textarea id="description" name="description" rows="4" placeholder="Describe your submission..." required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="files">Upload Files</label>
+                        <input type="file" id="files" name="files" multiple accept=".jpg,.jpeg,.png,.gif,.mp4,.mov,.pdf,.doc,.docx">
+                        <small>Accepted formats: Images (JPG, PNG, GIF), Videos (MP4, MOV), Documents (PDF, DOC, DOCX)</small>
+                    </div>
+                    
+                    <button type="submit" class="submit-btn">Submit for Consideration</button>
+                    <div id="submission-message" class="form-message"></div>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Annual Magazine. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
