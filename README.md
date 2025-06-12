@@ -89,6 +89,7 @@ pm2 restart plantos-magazine
 - **File Upload**: Multer
 - **Process Management**: PM2
 - **CI/CD**: GitHub Actions
+- **Security**: Firewall restrictions, environment variables
 
 ## File Structure
 
