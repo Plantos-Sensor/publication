@@ -20,7 +20,7 @@ function updateCountdown() {
 }
 
 // Email Form Handler
-function handleEmailSubmission(event) {
+async function handleEmailSubmission(event) {
     event.preventDefault();
     
     const email = document.getElementById('email').value;
@@ -34,32 +34,39 @@ function handleEmailSubmission(event) {
         return;
     }
     
-    // Simulate API call
+    // API call to backend
     const submitButton = event.target.querySelector('button');
     const originalText = submitButton.textContent;
     submitButton.textContent = 'Subscribing...';
     submitButton.disabled = true;
     
-    setTimeout(() => {
-        // Store email in localStorage (in a real app, you'd send to a server)
-        let emails = JSON.parse(localStorage.getItem('newsletterEmails') || '[]');
+    try {
+        const response = await fetch('/api/subscribe', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email }),
+        });
         
-        if (emails.includes(email)) {
-            showMessage(messageDiv, 'This email is already subscribed!', 'error');
-        } else {
-            emails.push(email);
-            localStorage.setItem('newsletterEmails', JSON.stringify(emails));
-            showMessage(messageDiv, 'Thank you for subscribing! We\'ll keep you updated.', 'success');
+        const data = await response.json();
+        
+        if (response.ok) {
+            showMessage(messageDiv, data.message, 'success');
             document.getElementById('email').value = '';
+        } else {
+            showMessage(messageDiv, data.error, 'error');
         }
-        
-        submitButton.textContent = originalText;
-        submitButton.disabled = false;
-    }, 1000);
+    } catch (error) {
+        showMessage(messageDiv, 'Network error. Please try again.', 'error');
+    }
+    
+    submitButton.textContent = originalText;
+    submitButton.disabled = false;
 }
 
 // Submission Form Handler
-function handleSubmissionForm(event) {
+async function handleSubmissionForm(event) {
     event.preventDefault();
     
     const formData = new FormData(event.target);
@@ -84,38 +91,32 @@ function handleSubmissionForm(event) {
         return;
     }
     
-    // Simulate file upload and form submission
+    // API call to backend
     const submitButton = event.target.querySelector('.submit-btn');
     const originalText = submitButton.textContent;
     submitButton.textContent = 'Submitting...';
     submitButton.disabled = true;
     
-    setTimeout(() => {
-        // Store submission in localStorage (in a real app, you'd send to a server)
-        let submissions = JSON.parse(localStorage.getItem('submissions') || '[]');
+    try {
+        const response = await fetch('/api/submit', {
+            method: 'POST',
+            body: formData, // FormData handles multipart/form-data automatically
+        });
         
-        const submission = {
-            id: Date.now(),
-            name: name,
-            email: email,
-            type: type,
-            title: title,
-            description: description,
-            files: formData.get('files') ? Array.from(formData.getAll('files')).map(f => f.name) : [],
-            submittedAt: new Date().toISOString()
-        };
+        const data = await response.json();
         
-        submissions.push(submission);
-        localStorage.setItem('submissions', JSON.stringify(submissions));
-        
-        showMessage(messageDiv, 'Thank you for your submission! We\'ll review it and get back to you soon.', 'success');
-        
-        // Reset form
-        event.target.reset();
-        
-        submitButton.textContent = originalText;
-        submitButton.disabled = false;
-    }, 2000);
+        if (response.ok) {
+            showMessage(messageDiv, data.message, 'success');
+            event.target.reset();
+        } else {
+            showMessage(messageDiv, data.error, 'error');
+        }
+    } catch (error) {
+        showMessage(messageDiv, 'Network error. Please try again.', 'error');
+    }
+    
+    submitButton.textContent = originalText;
+    submitButton.disabled = false;
 }
 
 // Utility function to show messages
