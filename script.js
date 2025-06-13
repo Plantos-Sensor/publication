@@ -34,35 +34,29 @@ async function handleEmailSubmission(event) {
         return;
     }
     
-    // API call to backend
+    // Store email locally and show success message
     const submitButton = event.target.querySelector('button');
     const originalText = submitButton.textContent;
     submitButton.textContent = 'Subscribing...';
     submitButton.disabled = true;
     
-    try {
-        const response = await fetch('/api/subscribe', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ email }),
-        });
+    // Simulate API delay
+    setTimeout(() => {
+        // Store in localStorage
+        let emails = JSON.parse(localStorage.getItem('newsletter_emails') || '[]');
         
-        const data = await response.json();
-        
-        if (response.ok) {
-            showMessage(messageDiv, data.message, 'success');
-            document.getElementById('email').value = '';
+        if (emails.includes(email)) {
+            showMessage(messageDiv, 'This email is already subscribed!', 'error');
         } else {
-            showMessage(messageDiv, data.error, 'error');
+            emails.push(email);
+            localStorage.setItem('newsletter_emails', JSON.stringify(emails));
+            showMessage(messageDiv, 'Successfully subscribed! We\'ll notify you when we launch.', 'success');
+            document.getElementById('email').value = '';
         }
-    } catch (error) {
-        showMessage(messageDiv, 'Network error. Please try again.', 'error');
-    }
-    
-    submitButton.textContent = originalText;
-    submitButton.disabled = false;
+        
+        submitButton.textContent = originalText;
+        submitButton.disabled = false;
+    }, 1000);
 }
 
 // Submission Form Handler
@@ -91,32 +85,37 @@ async function handleSubmissionForm(event) {
         return;
     }
     
-    // API call to backend
+    // Store submission locally and show success message
     const submitButton = event.target.querySelector('.submit-btn');
     const originalText = submitButton.textContent;
     submitButton.textContent = 'Submitting...';
     submitButton.disabled = true;
     
-    try {
-        const response = await fetch('/api/submit', {
-            method: 'POST',
-            body: formData, // FormData handles multipart/form-data automatically
-        });
+    // Simulate API delay
+    setTimeout(() => {
+        // Store submission in localStorage
+        let submissions = JSON.parse(localStorage.getItem('submissions') || '[]');
         
-        const data = await response.json();
+        const submission = {
+            id: Date.now(),
+            name,
+            email,
+            type,
+            title,
+            description,
+            timestamp: new Date().toISOString(),
+            files: formData.get('files') ? [formData.get('files').name] : []
+        };
         
-        if (response.ok) {
-            showMessage(messageDiv, data.message, 'success');
-            event.target.reset();
-        } else {
-            showMessage(messageDiv, data.error, 'error');
-        }
-    } catch (error) {
-        showMessage(messageDiv, 'Network error. Please try again.', 'error');
-    }
-    
-    submitButton.textContent = originalText;
-    submitButton.disabled = false;
+        submissions.push(submission);
+        localStorage.setItem('submissions', JSON.stringify(submissions));
+        
+        showMessage(messageDiv, 'Submission received! We\'ll review it and get back to you soon.', 'success');
+        event.target.reset();
+        
+        submitButton.textContent = originalText;
+        submitButton.disabled = false;
+    }, 1500);
 }
 
 // Utility function to show messages

@@ -1,77 +1,37 @@
-name: Deploy Node.js Application
+name: Deploy to GitHub Pages
 
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
-
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-jobs:
-  # Build and test job (runs on GitHub hosted runners)
-  build:
-    runs-on: ubuntu-latest
-    
-    strategy:
-      matrix:
-        node-version: [18.x, 20.x]
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        
-      - name: Setup Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-          
-      - name: Install dependencies
-        run: npm ci
-        
-      - name: Run tests (if available)
-        run: npm test --if-present
-        
-      - name: Build application
-        run: npm run build --if-present
+permissions:
+  contents: read
+  pages: write
+  id-token: write
 
-  # Deploy to server job (runs on self-hosted runner)
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
   deploy:
-    runs-on: self-hosted
-    needs: build
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
         
-      - name: Stop existing application
-        run: pm2 stop plantos-magazine || true
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
         
-      - name: Install dependencies
-        run: npm ci --only=production
-        
-      - name: Create uploads directory
-        run: mkdir -p uploads
-        
-      - name: Create environment file
-        run: |
-          cat > .env << EOF
-          DB_HOST=${{ secrets.DB_HOST }}
-          DB_USER=${{ secrets.DB_USER }}
-          DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-          DB_NAME=${{ secrets.DB_NAME }}
-          DB_PORT=${{ secrets.DB_PORT }}
-          NODE_ENV=production
-          EOF
-        
-      - name: Start application with PM2
-        run: pm2 start server.js --name plantos-magazine --env production || pm2 restart plantos-magazine
-        
-      - name: Save PM2 configuration
-        run: pm2 save
-        
-      - name: Display deployment status
-        run: echo "Deployment completed successfully"
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
+          
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
