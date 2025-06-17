@@ -10,10 +10,10 @@ const port = 3000;
 
 // Database connection
 const pool = new Pool({
-  user: process.env.DB_USER || 'postgres',
-  host: process.env.DB_HOST || '192.168.1.12',
-  database: process.env.DB_NAME || 'plantos_magazine',
-  password: process.env.DB_PASSWORD || 'postgres123',
+  user: process.env.DB_USER,
+  host: process.env.DB_HOST,
+  database: process.env.DB_NAME,
+  password: process.env.DB_PASSWORD,
   port: process.env.DB_PORT || 5432,
 });
 
