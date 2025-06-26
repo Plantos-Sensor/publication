@@ -46,8 +46,8 @@ jobs:
           else
             echo "✅ Supabase secrets found, injecting into build..."
             # Replace placeholders with actual values
-            sed "s|YOUR_SUPABASE_URL_HERE|$SUPABASE_URL|g" script.js > build/script.js
-            sed -i "s|YOUR_SUPABASE_ANON_KEY_HERE|$SUPABASE_ANON_KEY|g" build/script.js
+            sed "s#YOUR_SUPABASE_URL_HERE#$SUPABASE_URL#g" script.js > build/script.js
+            sed -i "s#YOUR_SUPABASE_ANON_KEY_HERE#$SUPABASE_ANON_KEY#g" build/script.js
             echo "✅ Build completed with Supabase credentials injected"
           fi
         
