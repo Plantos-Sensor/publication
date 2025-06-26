@@ -41,7 +41,7 @@ async function handleEmailSubmission(event) {
     
     try {
         // Try to insert into Supabase
-        if (supabase && SUPABASE_URL !== 'YOUR_SUPABASE_URL_HERE') {
+        if (supabase) {
             // First check if email already exists
             const { data: existingEmail, error: checkError } = await supabase
                 .from('email_subscriptions')
@@ -124,7 +124,7 @@ async function handleSubmissionForm(event) {
     
     try {
         // Try to insert into Supabase
-        if (supabase && SUPABASE_URL !== 'YOUR_SUPABASE_URL') {
+        if (supabase) {
             const submission = {
                 author_name: name,
                 author_email: email,
@@ -257,10 +257,18 @@ let supabase;
 
 // Initialize Supabase client
 try {
-    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    console.log('Supabase client initialized');
+    if (SUPABASE_URL && SUPABASE_URL !== 'YOUR_SUPABASE_URL_HERE' && 
+        SUPABASE_ANON_KEY && SUPABASE_ANON_KEY !== 'YOUR_SUPABASE_ANON_KEY_HERE') {
+        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        console.log('✅ Supabase client initialized successfully');
+    } else {
+        console.warn('⚠️ Supabase credentials not configured. Using localStorage fallback.');
+        console.log('To enable Supabase: Set up GitHub Secrets for SUPABASE_URL and SUPABASE_ANON_KEY');
+        supabase = null;
+    }
 } catch (error) {
-    console.error('Failed to initialize Supabase:', error);
+    console.error('❌ Failed to initialize Supabase:', error);
+    supabase = null;
 }
 
 // Console message for developers

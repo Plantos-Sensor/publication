@@ -36,11 +36,20 @@ jobs:
           cp index.html build/
           cp styles.css build/
           
-          # Replace placeholders in script.js with actual values from secrets
-          sed "s|YOUR_SUPABASE_URL_HERE|$SUPABASE_URL|g" script.js > build/script.js
-          sed -i "s|YOUR_SUPABASE_ANON_KEY_HERE|$SUPABASE_ANON_KEY|g" build/script.js
-          
-          echo "Build completed with Supabase credentials injected"
+          # Check if secrets are available
+          if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_ANON_KEY" ]; then
+            echo "⚠️  Warning: Supabase secrets not configured. Site will use localStorage fallback."
+            echo "To fix: Go to Settings > Secrets and variables > Actions and add:"
+            echo "  - SUPABASE_URL (your Supabase project URL)"
+            echo "  - SUPABASE_ANON_KEY (your Supabase anon public key)"
+            cp script.js build/
+          else
+            echo "✅ Supabase secrets found, injecting into build..."
+            # Replace placeholders with actual values
+            sed "s|YOUR_SUPABASE_URL_HERE|$SUPABASE_URL|g" script.js > build/script.js
+            sed -i "s|YOUR_SUPABASE_ANON_KEY_HERE|$SUPABASE_ANON_KEY|g" build/script.js
+            echo "✅ Build completed with Supabase credentials injected"
+          fi
         
       - name: Setup Pages
         uses: actions/configure-pages@v4
