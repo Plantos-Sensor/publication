@@ -34,29 +34,48 @@ async function handleEmailSubmission(event) {
         return;
     }
     
-    // Store email locally and show success message
     const submitButton = event.target.querySelector('button');
     const originalText = submitButton.textContent;
     submitButton.textContent = 'Subscribing...';
     submitButton.disabled = true;
     
-    // Simulate API delay
-    setTimeout(() => {
-        // Store in localStorage
-        let emails = JSON.parse(localStorage.getItem('newsletter_emails') || '[]');
-        
-        if (emails.includes(email)) {
-            showMessage(messageDiv, 'This email is already subscribed!', 'error');
+    try {
+        // Try to insert into Supabase
+        if (supabase && SUPABASE_URL !== 'YOUR_SUPABASE_URL') {
+            const { data, error } = await supabase
+                .from('email_subscriptions')
+                .insert([{ email: email, subscribed_at: new Date().toISOString() }]);
+            
+            if (error) {
+                if (error.code === '23505') { // Unique constraint violation
+                    showMessage(messageDiv, 'This email is already subscribed!', 'error');
+                } else {
+                    throw error;
+                }
+            } else {
+                showMessage(messageDiv, 'Successfully subscribed! We\'ll notify you when we launch.', 'success');
+                document.getElementById('email').value = '';
+            }
         } else {
-            emails.push(email);
-            localStorage.setItem('newsletter_emails', JSON.stringify(emails));
-            showMessage(messageDiv, 'Successfully subscribed! We\'ll notify you when we launch.', 'success');
-            document.getElementById('email').value = '';
+            // Fallback to localStorage if Supabase not configured
+            let emails = JSON.parse(localStorage.getItem('newsletter_emails') || '[]');
+            
+            if (emails.includes(email)) {
+                showMessage(messageDiv, 'This email is already subscribed!', 'error');
+            } else {
+                emails.push(email);
+                localStorage.setItem('newsletter_emails', JSON.stringify(emails));
+                showMessage(messageDiv, 'Successfully subscribed! We\'ll notify you when we launch.', 'success');
+                document.getElementById('email').value = '';
+            }
         }
-        
+    } catch (error) {
+        console.error('Error saving email subscription:', error);
+        showMessage(messageDiv, 'There was an error subscribing. Please try again.', 'error');
+    } finally {
         submitButton.textContent = originalText;
         submitButton.disabled = false;
-    }, 1000);
+    }
 }
 
 // Submission Form Handler
@@ -85,37 +104,62 @@ async function handleSubmissionForm(event) {
         return;
     }
     
-    // Store submission locally and show success message
     const submitButton = event.target.querySelector('.submit-btn');
     const originalText = submitButton.textContent;
     submitButton.textContent = 'Submitting...';
     submitButton.disabled = true;
     
-    // Simulate API delay
-    setTimeout(() => {
-        // Store submission in localStorage
-        let submissions = JSON.parse(localStorage.getItem('submissions') || '[]');
-        
-        const submission = {
-            id: Date.now(),
-            name,
-            email,
-            type,
-            title,
-            description,
-            timestamp: new Date().toISOString(),
-            files: formData.get('files') ? [formData.get('files').name] : []
-        };
-        
-        submissions.push(submission);
-        localStorage.setItem('submissions', JSON.stringify(submissions));
-        
-        showMessage(messageDiv, 'Submission received! We\'ll review it and get back to you soon.', 'success');
-        event.target.reset();
-        
+    try {
+        // Try to insert into Supabase
+        if (supabase && SUPABASE_URL !== 'YOUR_SUPABASE_URL') {
+            const submission = {
+                author_name: name,
+                author_email: email,
+                submission_type: type,
+                title: title,
+                description: description,
+                submitted_at: new Date().toISOString(),
+                status: 'pending'
+            };
+            
+            const { data, error } = await supabase
+                .from('submissions')
+                .insert([submission]);
+            
+            if (error) {
+                throw error;
+            } else {
+                showMessage(messageDiv, 'Submission received! We\'ll review it and get back to you soon.', 'success');
+                event.target.reset();
+            }
+        } else {
+            // Fallback to localStorage if Supabase not configured
+            let submissions = JSON.parse(localStorage.getItem('submissions') || '[]');
+            
+            const submission = {
+                id: Date.now(),
+                name,
+                email,
+                type,
+                title,
+                description,
+                timestamp: new Date().toISOString(),
+                files: formData.get('files') ? [formData.get('files').name] : []
+            };
+            
+            submissions.push(submission);
+            localStorage.setItem('submissions', JSON.stringify(submissions));
+            
+            showMessage(messageDiv, 'Submission received! We\'ll review it and get back to you soon.', 'success');
+            event.target.reset();
+        }
+    } catch (error) {
+        console.error('Error saving submission:', error);
+        showMessage(messageDiv, 'There was an error submitting. Please try again.', 'error');
+    } finally {
         submitButton.textContent = originalText;
         submitButton.disabled = false;
-    }, 1500);
+    }
 }
 
 // Utility function to show messages
@@ -192,8 +236,22 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelector('.hero-section').style.transform = 'translateY(0)';
 });
 
+// Supabase Configuration
+const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+
+let supabase;
+
+// Initialize Supabase client
+try {
+    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    console.log('Supabase client initialized');
+} catch (error) {
+    console.error('Failed to initialize Supabase:', error);
+}
+
 // Console message for developers
 console.log('🚀 Plantos Magazine Website - Ready for Launch!');
-console.log('📧 Email subscriptions stored in localStorage');
-console.log('📝 Submissions stored in localStorage');
+console.log('📧 Email subscriptions will be stored in Supabase');
+console.log('📝 Submissions will be stored in Supabase');
 console.log('⏰ Countdown to January 1st, 2026 active!');
