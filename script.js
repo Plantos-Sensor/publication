@@ -41,17 +41,30 @@ async function handleEmailSubmission(event) {
     
     try {
         // Try to insert into Supabase
-        if (supabase && SUPABASE_URL !== 'YOUR_SUPABASE_URL') {
+        if (supabase && SUPABASE_URL !== 'YOUR_SUPABASE_URL_HERE') {
+            // First check if email already exists
+            const { data: existingEmail, error: checkError } = await supabase
+                .from('email_subscriptions')
+                .select('email')
+                .eq('email', email)
+                .single();
+            
+            if (checkError && checkError.code !== 'PGRST116') { // PGRST116 = no rows returned
+                throw checkError;
+            }
+            
+            if (existingEmail) {
+                showMessage(messageDiv, 'This email is already subscribed!', 'error');
+                return;
+            }
+            
+            // Insert new email subscription
             const { data, error } = await supabase
                 .from('email_subscriptions')
                 .insert([{ email: email, subscribed_at: new Date().toISOString() }]);
             
             if (error) {
-                if (error.code === '23505') { // Unique constraint violation
-                    showMessage(messageDiv, 'This email is already subscribed!', 'error');
-                } else {
-                    throw error;
-                }
+                throw error;
             } else {
                 showMessage(messageDiv, 'Successfully subscribed! We\'ll notify you when we launch.', 'success');
                 document.getElementById('email').value = '';
