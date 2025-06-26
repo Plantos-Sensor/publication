@@ -257,14 +257,6 @@ let supabase;
 
 // Initialize Supabase client
 try {
-    // Debug: Let's see what's actually in the deployed file
-    console.log('🔍 SUPABASE_URL value:', SUPABASE_URL);
-    console.log('🔍 SUPABASE_URL type:', typeof SUPABASE_URL);
-    console.log('🔍 SUPABASE_URL length:', SUPABASE_URL ? SUPABASE_URL.length : 'undefined');
-    console.log('🔍 URL equals placeholder?', SUPABASE_URL === 'YOUR_SUPABASE_URL_HERE');
-    console.log('🔍 SUPABASE_ANON_KEY length:', SUPABASE_ANON_KEY ? SUPABASE_ANON_KEY.length : 'undefined');
-    console.log('🔍 Key equals placeholder?', SUPABASE_ANON_KEY === 'YOUR_SUPABASE_ANON_KEY_HERE');
-    
     if (SUPABASE_URL && SUPABASE_URL.startsWith('https://') && 
         SUPABASE_ANON_KEY && SUPABASE_ANON_KEY.length > 100) {
         supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
