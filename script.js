@@ -257,18 +257,12 @@ let supabase;
 
 // Initialize Supabase client
 try {
-    // Debug logging to see what values we have
-    console.log('🔍 Debug - SUPABASE_URL:', SUPABASE_URL);
-    console.log('🔍 Debug - SUPABASE_URL === placeholder?', SUPABASE_URL === 'YOUR_SUPABASE_URL_HERE');
-    console.log('🔍 Debug - SUPABASE_ANON_KEY length:', SUPABASE_ANON_KEY ? SUPABASE_ANON_KEY.length : 'undefined');
-    
     if (SUPABASE_URL && SUPABASE_URL !== 'YOUR_SUPABASE_URL_HERE' && 
         SUPABASE_ANON_KEY && SUPABASE_ANON_KEY !== 'YOUR_SUPABASE_ANON_KEY_HERE') {
         supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         console.log('✅ Supabase client initialized successfully');
     } else {
         console.warn('⚠️ Supabase credentials not configured. Using localStorage fallback.');
-        console.log('To enable Supabase: Set up GitHub Secrets for SUPABASE_URL and SUPABASE_ANON_KEY');
         supabase = null;
     }
 } catch (error) {

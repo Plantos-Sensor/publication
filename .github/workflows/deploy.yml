@@ -24,6 +24,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          
       - name: Build site with secrets
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
@@ -44,21 +49,9 @@ jobs:
             echo "  - SUPABASE_ANON_KEY (your Supabase anon public key)"
             cp script.js build/
           else
-            echo "✅ Supabase secrets found, injecting into build..."
-            # Use envsubst for more reliable replacement
-            export SUPABASE_URL_PLACEHOLDER="YOUR_SUPABASE_URL_HERE"
-            export SUPABASE_KEY_PLACEHOLDER="YOUR_SUPABASE_ANON_KEY_HERE"
-            
-            # Create script with replacements
-            cat script.js | \
-              sed "s|$SUPABASE_URL_PLACEHOLDER|$SUPABASE_URL|g" | \
-              sed "s|$SUPABASE_KEY_PLACEHOLDER|$SUPABASE_ANON_KEY|g" \
-              > build/script.js
-            
+            echo "✅ Supabase secrets found, using Node.js build script..."
+            node build-script.js
             echo "✅ Build completed with Supabase credentials injected"
-            echo "🔍 Verifying replacement..."
-            grep -n "YOUR_SUPABASE_URL_HERE" build/script.js || echo "✅ URL placeholder replaced"
-            grep -n "YOUR_SUPABASE_ANON_KEY_HERE" build/script.js || echo "✅ Key placeholder replaced"
           fi
         
       - name: Setup Pages
