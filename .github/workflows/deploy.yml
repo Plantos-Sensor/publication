@@ -45,10 +45,20 @@ jobs:
             cp script.js build/
           else
             echo "✅ Supabase secrets found, injecting into build..."
-            # Replace placeholders with actual values
-            sed "s#YOUR_SUPABASE_URL_HERE#$SUPABASE_URL#g" script.js > build/script.js
-            sed -i "s#YOUR_SUPABASE_ANON_KEY_HERE#$SUPABASE_ANON_KEY#g" build/script.js
+            # Use envsubst for more reliable replacement
+            export SUPABASE_URL_PLACEHOLDER="YOUR_SUPABASE_URL_HERE"
+            export SUPABASE_KEY_PLACEHOLDER="YOUR_SUPABASE_ANON_KEY_HERE"
+            
+            # Create script with replacements
+            cat script.js | \
+              sed "s|$SUPABASE_URL_PLACEHOLDER|$SUPABASE_URL|g" | \
+              sed "s|$SUPABASE_KEY_PLACEHOLDER|$SUPABASE_ANON_KEY|g" \
+              > build/script.js
+            
             echo "✅ Build completed with Supabase credentials injected"
+            echo "🔍 Verifying replacement..."
+            grep -n "YOUR_SUPABASE_URL_HERE" build/script.js || echo "✅ URL placeholder replaced"
+            grep -n "YOUR_SUPABASE_ANON_KEY_HERE" build/script.js || echo "✅ Key placeholder replaced"
           fi
         
       - name: Setup Pages
