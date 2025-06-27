@@ -9,11 +9,28 @@
 <body>
     <header>
         <nav>
+            <button id="menu-toggle" class="menu-toggle" aria-label="Toggle navigation menu">
+                <span class="hamburger"></span>
+                <span class="hamburger"></span>
+                <span class="hamburger"></span>
+            </button>
             <div class="logo">
                 <h1>Plantos</h1>
             </div>
         </nav>
     </header>
+
+    <aside id="sidebar" class="sidebar">
+        <nav class="sidebar-nav">
+            <ul class="nav-menu">
+                <li><a href="#blog" class="nav-link">Blog</a></li>
+                <li><a href="#forum" class="nav-link">Discussion Forum</a></li>
+                <li><a href="#articles" class="nav-link">Articles</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <div id="overlay" class="overlay"></div>
 
     <main>
         <section id="hero" class="hero-section">

@@ -208,6 +208,27 @@ function smoothScroll() {
     });
 }
 
+// Sidebar Menu Functions
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    const menuToggle = document.getElementById('menu-toggle');
+    
+    sidebar.classList.toggle('active');
+    overlay.classList.toggle('active');
+    menuToggle.classList.toggle('active');
+}
+
+function closeSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    const menuToggle = document.getElementById('menu-toggle');
+    
+    sidebar.classList.remove('active');
+    overlay.classList.remove('active');
+    menuToggle.classList.remove('active');
+}
+
 // Initialize everything when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
     // Start countdown timer
@@ -217,6 +238,22 @@ document.addEventListener('DOMContentLoaded', function() {
     // Add form event listeners
     document.getElementById('email-form').addEventListener('submit', handleEmailSubmission);
     document.getElementById('submission-form').addEventListener('submit', handleSubmissionForm);
+    
+    // Add sidebar event listeners
+    document.getElementById('menu-toggle').addEventListener('click', toggleSidebar);
+    document.getElementById('overlay').addEventListener('click', closeSidebar);
+    
+    // Close sidebar when clicking navigation links
+    document.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', closeSidebar);
+    });
+    
+    // Close sidebar on escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeSidebar();
+        }
+    });
     
     // Initialize smooth scrolling
     smoothScroll();
