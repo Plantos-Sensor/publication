@@ -37,7 +37,7 @@ jobs:
           # Create build directory
           mkdir -p build
           
-          # Copy static files
+          # Copy all static files
           cp index.html build/
           cp styles.css build/
           
